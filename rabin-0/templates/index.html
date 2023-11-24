@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Rabin-Karp Algorithm Visualization</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css"> <!-- Include your custom CSS file -->
+  <style>
+    /* Add custom CSS for the execution steps boxes */
+
+    body {
+      background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 57%, rgba(0,212,255,1) 100%);
+      color: #f8f8f8;
+      font-family: "Arial", sans-serif;
+    }
+
+    h1, h2,p {
+      text-align: center; 
+    }
+  
+    .step-box {
+      border: 3px solid #ccc;
+      background-color: #a52020;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .execution-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .execution-table th,
+    .execution-table td {
+      border: 3px solid #ccb5b5;
+      padding: 8px;
+    }
+    
+    .execution-table th {
+      background-color: #cccaca;
+      font-weight: bold;
+    }
+
+    #start-button {
+    display: block;
+    margin: 0 auto;
+    }
+
+    #next-button {
+      float: right;
+      display: block;
+      margin: 0 auto;
+      width: 120px;
+      background-color:#090979;
+    }
+
+    .found {
+      background-color: #2ca02c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">Rabin-Karp Algorithm Visualization</h1>
+    <form method="post" class="mb-4">
+      <!-- Add some colorful input fields -->
+      <div class="form-group">
+        <label for="text">Enter Text:</label>
+        <input type="text" class="form-control colorful-input" id="text" name="text" required>
+      </div>
+      <div class="form-group">
+        <label for="pattern">Enter Pattern:</label>
+        <input type="text" class="form-control colorful-input" id="pattern" name="pattern" required>
+      </div>
+      <button id="start-button" type="submit" class="btn btn-danger"> Execute </button>
+    </form>
+    <button id="next-button" class="btn"> Next </button>
+    <button id="display-all-button" class="btn btn-primary"> Display All Steps </button>
+
+    <h2 class="mt-4">Algorithm Execution Steps:</h2>
+
+    <div class="steps-list">
+      {% if steps %}
+        {% for step in steps %}
+          <div class="step-box">
+            <table class="execution-table">              
+              <b>Checking Window:</b>
+              <tbody>
+                {% for character in step %}
+                  <td>
+                    <b>{{ character }}</b>
+                  </td>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="step-box">
+          <p>No steps available</p>
+        </div>
+      {% endif %}
+      </div>
+
+
+    <h2 class="mt-4">Pattern Occurrences:</h2>
+    <ul class="pattern-list">
+      {% if pattern_indices %}
+        {% for index in pattern_indices %}
+          <p class="pattern-occurrence" data-index="{{ index }}">🎯 Pattern found at index {{ index }} 🎯</p>
+        {% endfor %}
+      {% else %}
+        <p>No occurrences found</p>
+      {% endif %}
+    </ul>
+    
+
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const nextButton = document.getElementById("next-button");
+      const startButton = document.getElementById("start-button");
+      const displayAllButton = document.getElementById("display-all-button");
+      const stepsList = document.querySelector(".steps-list");
+      let stepCounter = 0;
+
+      const steps = stepsList.querySelectorAll(".step-box");
+      steps.forEach((step) => {
+        step.style.display = "none";
+      });
+
+      function displayNextStep() {
+        if (stepCounter < steps.length) {
+          steps[stepCounter].style.display = "block";
+          stepCounter++;
+        }
+      }
+
+      function highlightPatternFound(stepNumber) {
+        const patternOccurrences = document.querySelectorAll(".pattern-occurrence");
+        patternOccurrences.forEach((patternOccurrence) => {
+          const index = patternOccurrence.getAttribute("data-index");
+          if (index && stepNumber === parseInt(index)) {
+            steps[stepNumber].classList.add("found");
+          }
+        });
+      }
+
+      nextButton.addEventListener("click", () => {
+        displayNextStep();
+        highlightPatternFound(stepCounter - 1); 
+      });
+
+      displayAllButton.addEventListener("click", () => {
+        steps.forEach((step, index) => {
+          step.style.display = "block";
+          highlightPatternFound(index);
+        });
+        stepCounter = steps.length;
+      });
+    });
+  </script>
+</body>
+</html>
